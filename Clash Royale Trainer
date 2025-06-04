@@ -1,0 +1,115 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+
+const checklistItems = [
+  {
+    title: "Daily Warm-Up",
+    tasks: [
+      "Practice Tesla timing vs Hog/Balloon/Ram Rider",
+      "Valkyrie vs swarm placement drill",
+      "Spell aim: Fireball + Arrows vs Phoenix/Minions",
+      "Balloon + Ice Spirit/Fireball/Valk combos"
+    ]
+  },
+  {
+    title: "Midday Practice",
+    tasks: [
+      "Play 3 Ladder Matches",
+      "Watch 1 win & 1 loss replay",
+      "Friendly match vs Phoenix, Miner, or MK decks"
+    ]
+  },
+  {
+    title: "Evening Push",
+    tasks: [
+      "Casual warm-up game",
+      "Play 3–6 Ladder Matches",
+      "Watch replay after each loss",
+      "End session on a win or break if tilted"
+    ]
+  },
+  {
+    title: "Bonus Training (Optional)",
+    tasks: [
+      "Check stats on RoyaleAPI or Stats Royale",
+      "Watch top Balloon deck players",
+      "Memorize Fireball + Arrows damage values"
+    ]
+  }
+];
+
+export default function ClashRoyaleTrainingApp() {
+  const [checked, setChecked] = useState({});
+  const [trophyLog, setTrophyLog] = useState([]);
+  const [currentTrophies, setCurrentTrophies] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const toggle = (section, task) => {
+    const key = `${section}-${task}`;
+    setChecked((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const logTrophies = () => {
+    if (currentTrophies > 0) {
+      setTrophyLog((prev) => [
+        ...prev,
+        { date: selectedDate.toDateString(), trophies: currentTrophies }
+      ]);
+      setCurrentTrophies(0);
+    }
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-bold text-center mb-4">Noah's Clash Royale 9K Training Site</h1>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {checklistItems.map((section, index) => (
+          <Card key={index} className="border p-4 shadow-md">
+            <CardContent>
+              <h2 className="text-xl font-semibold mb-4">{section.title}</h2>
+              <ul className="space-y-2">
+                {section.tasks.map((task, i) => (
+                  <li key={i} className="flex items-center space-x-2">
+                    <Checkbox
+                      checked={checked[`${section.title}-${task}`] || false}
+                      onCheckedChange={() => toggle(section.title, task)}
+                    />
+                    <span>{task}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="mt-10">
+        <h2 className="text-2xl font-semibold mb-4">📈 Trophy Tracker</h2>
+        <div className="flex items-center gap-4 mb-4">
+          <Input
+            type="number"
+            placeholder="Current Trophy Count"
+            value={currentTrophies}
+            onChange={(e) => setCurrentTrophies(Number(e.target.value))}
+            className="w-40"
+          />
+          <Calendar selected={selectedDate} onSelect={setSelectedDate} className="w-auto" />
+          <Button onClick={logTrophies}>Log Trophies</Button>
+        </div>
+
+        <div className="space-y-2">
+          {trophyLog.map((log, i) => (
+            <div key={i} className="text-lg">
+              {log.date}: <strong>{log.trophies}</strong> trophies
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
