@@ -1,115 +1,197 @@
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-
-const checklistItems = [
-  {
-    title: "Daily Warm-Up",
-    tasks: [
-      "Practice Tesla timing vs Hog/Balloon/Ram Rider",
-      "Valkyrie vs swarm placement drill",
-      "Spell aim: Fireball + Arrows vs Phoenix/Minions",
-      "Balloon + Ice Spirit/Fireball/Valk combos"
-    ]
-  },
-  {
-    title: "Midday Practice",
-    tasks: [
-      "Play 3 Ladder Matches",
-      "Watch 1 win & 1 loss replay",
-      "Friendly match vs Phoenix, Miner, or MK decks"
-    ]
-  },
-  {
-    title: "Evening Push",
-    tasks: [
-      "Casual warm-up game",
-      "Play 3–6 Ladder Matches",
-      "Watch replay after each loss",
-      "End session on a win or break if tilted"
-    ]
-  },
-  {
-    title: "Bonus Training (Optional)",
-    tasks: [
-      "Check stats on RoyaleAPI or Stats Royale",
-      "Watch top Balloon deck players",
-      "Memorize Fireball + Arrows damage values"
-    ]
-  }
-];
-
-export default function ClashRoyaleTrainingApp() {
-  const [checked, setChecked] = useState({});
-  const [trophyLog, setTrophyLog] = useState([]);
-  const [currentTrophies, setCurrentTrophies] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-
-  const toggle = (section, task) => {
-    const key = `${section}-${task}`;
-    setChecked((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const logTrophies = () => {
-    if (currentTrophies > 0) {
-      setTrophyLog((prev) => [
-        ...prev,
-        { date: selectedDate.toDateString(), trophies: currentTrophies }
-      ]);
-      setCurrentTrophies(0);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Noah's Clash Royale 9K Training</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: linear-gradient(to right, #1f1c2c, #928dab);
+      margin: 0;
+      padding: 0;
+      color: #f5f5f5;
     }
-  };
 
-  return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-center mb-4">Noah's Clash Royale 9K Training Site</h1>
+    header {
+      background-color: #111;
+      padding: 1rem 2rem;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {checklistItems.map((section, index) => (
-          <Card key={index} className="border p-4 shadow-md">
-            <CardContent>
-              <h2 className="text-xl font-semibold mb-4">{section.title}</h2>
-              <ul className="space-y-2">
-                {section.tasks.map((task, i) => (
-                  <li key={i} className="flex items-center space-x-2">
-                    <Checkbox
-                      checked={checked[`${section.title}-${task}`] || false}
-                      onCheckedChange={() => toggle(section.title, task)}
-                    />
-                    <span>{task}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #ffd700;
+    }
 
-      <div className="mt-10">
-        <h2 className="text-2xl font-semibold mb-4">📈 Trophy Tracker</h2>
-        <div className="flex items-center gap-4 mb-4">
-          <Input
-            type="number"
-            placeholder="Current Trophy Count"
-            value={currentTrophies}
-            onChange={(e) => setCurrentTrophies(Number(e.target.value))}
-            className="w-40"
-          />
-          <Calendar selected={selectedDate} onSelect={setSelectedDate} className="w-auto" />
-          <Button onClick={logTrophies}>Log Trophies</Button>
-        </div>
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
 
-        <div className="space-y-2">
-          {trophyLog.map((log, i) => (
-            <div key={i} className="text-lg">
-              {log.date}: <strong>{log.trophies}</strong> trophies
-            </div>
-          ))}
-        </div>
+    .section {
+      background: #2d2b4e;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      border: 1px solid #444;
+    }
+
+    .section h2 {
+      margin-top: 0;
+      color: #ffd700;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin: 0.75rem 0;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    input[type="checkbox"] {
+      transform: scale(1.3);
+      accent-color: #ffd700;
+    }
+
+    .trophy-log {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .trophy-log input,
+    .trophy-log button {
+      padding: 0.6rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .trophy-log input[type="number"],
+    .trophy-log input[type="date"] {
+      background: #f8f8f8;
+      color: #333;
+    }
+
+    button {
+      background: #ffd700;
+      color: #1f1c2c;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #ffcc00;
+    }
+
+    .log-entry {
+      background: #403d69;
+      padding: 0.75rem;
+      border-radius: 6px;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏆 Noah's Clash Royale 9K Training</h1>
+  </header>
+
+  <div class="container">
+    <div class="section">
+      <h2>🛠️ Daily Warm-Up</h2>
+      <ul>
+        <li><label><input type="checkbox" /> Tesla timing vs Hog/Balloon/Ram Rider</label></li>
+        <li><label><input type="checkbox" /> Valkyrie vs swarm placement drill</label></li>
+        <li><label><input type="checkbox" /> Spell aim: Fireball + Arrows</label></li>
+        <li><label><input type="checkbox" /> Balloon + Valk/Fireball/Spirit combo</label></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>🌤️ Midday Practice</h2>
+      <ul>
+        <li><label><input type="checkbox" /> Play 3 Ladder Matches</label></li>
+        <li><label><input type="checkbox" /> Watch 1 win & 1 loss replay</label></li>
+        <li><label><input type="checkbox" /> Friendly match vs Phoenix, Miner, or MK decks</label></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>🌙 Evening Push</h2>
+      <ul>
+        <li><label><input type="checkbox" /> Casual warm-up game</label></li>
+        <li><label><input type="checkbox" /> Play 3–6 Ladder Matches</label></li>
+        <li><label><input type="checkbox" /> Watch replay after each loss</label></li>
+        <li><label><input type="checkbox" /> End session on a win or break if tilted</label></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>🎁 Bonus Training (Optional)</h2>
+      <ul>
+        <li><label><input type="checkbox" /> Check stats on RoyaleAPI or Stats Royale</label></li>
+        <li><label><input type="checkbox" /> Watch top Balloon deck players</label></li>
+        <li><label><input type="checkbox" /> Memorize Fireball + Arrows damage values</label></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>📈 Trophy Tracker</h2>
+      <div class="trophy-log">
+        <input type="date" id="log-date" />
+        <input type="number" id="trophy-count" placeholder="Enter trophy count" />
+        <button onclick="logTrophies()">Log Trophies</button>
+        <div id="log-output"></div>
       </div>
     </div>
-  );
-}
+  </div>
+
+  <script>
+    const logKey = "noahTrophyLog";
+    const output = document.getElementById("log-output");
+
+    function logTrophies() {
+      const date = document.getElementById("log-date").value;
+      const count = document.getElementById("trophy-count").value;
+      if (!date || !count) return alert("Please enter both date and trophy count.");
+
+      const log = JSON.parse(localStorage.getItem(logKey)) || [];
+      log.push({ date, count });
+      localStorage.setItem(logKey, JSON.stringify(log));
+      renderLog();
+    }
+
+    function renderLog() {
+      const log = JSON.parse(localStorage.getItem(logKey)) || [];
+      output.innerHTML = "";
+      log.forEach(entry => {
+        const div = document.createElement("div");
+        div.className = "log-entry";
+        div.textContent = `${entry.date}: ${entry.count} trophies`;
+        output.appendChild(div);
+      });
+    }
+
+    renderLog();
+  </script>
+</body>
+</html>
